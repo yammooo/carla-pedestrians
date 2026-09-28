@@ -17,9 +17,19 @@ The paper says pedestrians can **look around, check traffic, and hesitate** befo
 
 The enums differ too: the paper includes `RETREAT`, while the code has `NORMAL_CROSSING` instead. A retreat is recorded only by an internal flag and remains `CROSSING_ROAD`. Stopping for a vehicle does not enter `PAUSING_MID_CROSS`; faster crossing does not enter `RUNNING_ACROSS`. `FINISHED_CROSSING` may remain set while a pedestrian continues walking or after a retreat. Thus, simply adding an FSM column would **not** create the behavior labels described in the paper.
 
+## What a pedestrian-centered LiDAR BEV needs
+
+The current LiDAR `.bin` files contain per-frame point clouds, and the CSV has 2D boxes and pedestrian IDs. They do **not** contain the 3D geometry needed to locate a tracked pedestrian in those points. This is a proposed research extension, not a claim that the paper promises these files.
+
+- For each pedestrian and frame: a 3D box center `(x, y, z)`, size `(length, width, height)`, and yaw, with the coordinate frame and units stated. Keep the existing track ID and 2D box. A full box rotation is needed if we want exact boxes for tilted actors.
+- For each frame: ego pose `(x, y, z, roll, pitch, yaw)` and the LiDAR's pose relative to the ego. Keep roll and pitch for accurate 3D transforms, even if a flat BEV later uses only yaw.
+- For RGB, LiDAR, poses, and labels: actual CARLA frame IDs and timestamps, matched during export. Matching output filenames alone does not establish sensor alignment.
+
+CARLA makes these poses and actor boxes available during simulation, so exporting geometry is much smaller work than implementing the missing behavior states. It still needs a short validation run. These fields support a pedestrian-centered BEV and approximate box-based point cropping; exact identification of pedestrian LiDAR points would need additional point labels. They would make a useful **3D geometry dataset**, not supply the paper's missing behavior labels.
+
 ## Other limits
 
-- CARLA supplies ego pose and pedestrian positions during generation, but this exporter saves neither as per-frame trajectories. The paper describes a moving ego vehicle; it does not clearly promise an ego-trajectory file.
+- The paper describes a moving ego vehicle; it does not clearly promise an ego-trajectory file.
 - The inspected Hugging Face clip has the same CSV columns and duplicate rows, but its metadata disables LiDAR/DVS and it contains no such files. This is one inspected clip, not a claim about every released clip.
 - The paper's documented `scenarios generate` command is not registered in this checkout. The smoke test called the scenario class directly without changing generator code.
 
