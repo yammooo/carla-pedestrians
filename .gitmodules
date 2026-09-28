@@ -4,7 +4,7 @@
 	url = https://github.com/wielgosz-info/pedestrians-video-2-carla.git
 [submodule "pedestrians-scenarios"]
 	path = pedestrians-scenarios
-	url = https://github.com/wielgosz-info/pedestrians-scenarios.git
+	url = https://github.com/yammooo/pedestrians-scenarios.git
 [submodule "carlaviz"]
 	path = carlaviz
 	url = https://github.com/wielgosz-info/carlaviz.git
